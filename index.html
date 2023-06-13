@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+        <title>世界降水マップ</title>
+        <link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet" />
+        <style>
+            body { margin: 0; padding: 0; }
+            #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+            .map-overlay {
+                font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+                position: absolute;
+                width: 220px;
+                top: 0;
+                left: 0;
+                padding: 10px;
+            }
+
+            .map-overlay .map-overlay-inner {
+                background-color: #fff;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+                border-radius: 3px;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .map-overlay h2 {
+                line-height: 24px;
+                display: block;
+                margin: 0 0 10px;
+            }
+
+            .map-overlay input {
+                background-color: transparent;
+                display: inline-block;
+                width: 100%;
+                position: relative;
+                margin: 0;
+                cursor: ew-resize;
+            }
+
+            .map-overlay .series {
+                background-color: #fff;
+            }
+
+            .map-overlay-inner2 {
+                background-color: #fff;
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+                border-radius: 3px;
+                padding: 1px;
+                margin-bottom: 10px;
+            }
+
+            .map-overlay-inner3 {
+                background-color: rgba(255, 255, 255, 0);
+                padding: 2px;
+            }
+
+            li.listyle {
+                list-style-type: none;
+                margin: 0;
+            }
+
+            li.listyle:before {
+                content: "";
+                display: inline-block;
+                height: 15px;
+                width: 15px;
+                margin-right: 0;
+            }
+
+            li.series1:before {
+                background: rgb(180, 0, 104);
+            }
+
+            li.series2:before {
+                background: rgb(255, 40, 0);
+            }
+
+            li.series3:before {
+                background: rgb(255, 153, 0);
+            }
+
+            li.series4:before {
+                background: rgb(250, 245, 0);
+            }
+
+            li.series5:before {
+                background: rgb(0, 65, 255);
+            }
+
+            li.series6:before {
+                background: rgb(33, 140, 255);
+            }
+
+            li.series7:before {
+                background: rgb(160, 210, 255);
+            }
+
+            li.series8:before {
+                background: rgb(198, 228, 255);
+            }
+
+            li.series9:before {
+                background: rgb(255, 255, 255);
+            }
+
+            .popup {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 9999;
+                opacity: 0;
+                visibility: hidden;
+                transition: .6s;
+            }
+            .popup.is-show {
+                opacity: 1;
+                visibility: visible;
+            }
+            .popup-inner {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%,-50%);
+                width: 80%;
+                max-width: 600px;
+                padding: 50px;
+                background-color: #fff;
+                z-index: 2;
+            }
+            .popup-inner img {
+                width: 100%;
+            }
+            .close-btn {
+                position: absolute;
+                right: 0;
+                top: 0;
+                width: 50px;
+                height: 50px;
+                line-height: 50px;
+                text-align: center;
+                cursor: pointer;
+            }
+            .close-btn i {
+                font-size: 20px;
+                color: #333;
+            }
+            .black-background {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,.8);
+                z-index: 1;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+        <div class="popup" id="js-popup">
+            <div class="popup-inner">
+                <div class="close-btn" id="js-close-btn"><i class="fas fa-times"></i></div>
+                <ul>
+                    <li>アメリカ海洋大気庁（NOAA）の降水データ（20kmメッシュ）を使って実現しています</li>
+                    <li>この画面は毎朝9:30に更新されます</li>
+                    <li>背景地図のデータ元はNatural Earthです</li>
+                </ul>
+            </div>
+            <div class="black-background" id="js-black-bg"></div>
+        </div>
+        <div class="map-overlay top">
+            <div class="map-overlay-inner">
+                <h2 id="header-title"></h2>
+                <label id="forecast-date"></label>
+                <input id="slider" type="range" min="6" max="72" step="6" value="6">
+            </div>
+            <div class="map-overlay-inner2">
+                <div class="series">
+                    <ul>
+                        <li class="series1 listyle"> 80 kg/㎡ 以上</li>
+                        <li class="series2 listyle"> 50〜80 kg/㎡</li>
+                        <li class="series3 listyle"> 30〜50 kg/㎡</li>
+                        <li class="series4 listyle"> 20〜30 kg/㎡</li>
+                        <li class="series5 listyle"> 10〜20 kg/㎡</li>
+                        <li class="series6 listyle"> 5〜10 kg/㎡</li>
+                        <li class="series7 listyle"> 3〜5 kg/㎡</li>
+                        <li class="series8 listyle"> 1〜3 kg/㎡</li>
+                        <li class="series9 listyle"> 0〜1 kg/㎡</li>
+                    </ul>
+                </div>
+                
+            </div>
+            <div class="map-overlay-inner3">
+                <button id="js-show-popup">詳細情報</button>&nbsp;<a href="https://questant.jp/q/VVZSV5CH" target="_blank"><small>ご意見をお聞かせください</small></a>
+            </div>
+        </div>
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>
