@@ -30,7 +30,7 @@ git clone https://github.com/mapion/world-precipitation-cog-map.git
 cd world-precipitation-cog-map
 ```
 
-インストール
+依存モジュールをインストール
 
 ```sh
 npm install
