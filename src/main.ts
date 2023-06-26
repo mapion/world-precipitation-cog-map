@@ -115,23 +115,27 @@ const map = new Map({
 map.addControl(new maplibregl.NavigationControl());
 
 async function addWeather(id: number): Promise<void> {
-    const idZero = ('000' + id).slice(-3);
-    const cogPath = `https://mapion-vt-public-stg.s3.ap-northeast-1.amazonaws.com/lab/noaa/apcp/${targetDateFormatted}/18/${idZero}.tif`;
-    // console.log('cogPath', cogPath);
-    const { source } = await generateCogSource(cogPath, id);
-    const sourceId = `weather-cog-${id}`;
-    const layerId = `weather-cog-layer-${id}`;
-    // console.log('layerId', layerId);
-    map.addSource(sourceId, source);
-    map.addLayer({
-        id: layerId,
-        type: 'raster',
-        source: sourceId,
-        layout: {
-            visibility: 'none',
-        },
-        paint: { 'raster-opacity': 0.7 },
-    });
+    try {
+        const idZero = ('000' + id).slice(-3);
+        const cogPath = `https://mapion-vt-public-stg.s3.ap-northeast-1.amazonaws.com/lab/noaa/apcp/${targetDateFormatted}/18/${idZero}.tif`;
+        // console.log('cogPath', cogPath);
+        const { source } = await generateCogSource(cogPath, id);
+        const sourceId = `weather-cog-${id}`;
+        const layerId = `weather-cog-layer-${id}`;
+        // console.log('layerId', layerId);
+        map.addSource(sourceId, source);
+        map.addLayer({
+            id: layerId,
+            type: 'raster',
+            source: sourceId,
+            layout: {
+                visibility: 'none',
+            },
+            paint: { 'raster-opacity': 0.7 },
+        });
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 function switchWeather(id: number): void {
