@@ -13,7 +13,7 @@
     "vite": "^4.3.9"
   },
   "dependencies": {
-    "fast-png": "^6.1.0",
+    "fast-png": "^6.2.0",
     "geotiff": "^2.0.7",
     "maplibre-gl": "^3.0.1"
   }
